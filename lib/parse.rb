@@ -16,18 +16,22 @@ class Parser
     store_links_in_file
   end
 
-  def get_md_links(append_url) #Depth first search of links
-    if count >= 100
-      store_links_in_file
-      count = 0
-    end
-    store_links_in_file if @count >= 100
+  def incremental_storage
+    puts "---Appending the links of 20 .md files to links.yml"
+    store_links_in_file
+    count = 0
+  end
+
+  def get_md_links(append_url)
+    incremental_storage if count >= 20
+
     nav_elements = get_nav_elements(append_url)
     nav_elements.each do |el|
       title = el["title"]
       link = el["href"]
       if link.include?("blob")
         if title[-3..-1] == ".md"
+          puts "Identified .md file at #{link}"
           links[link] = []
           self.count += 1
         end
