@@ -16,8 +16,12 @@ class Parser
     store_links_in_file
   end
 
-  def get_md_links(append_url)
-    return if @count >= 20
+  def get_md_links(append_url) #Depth first search of links
+    if count >= 100
+      store_links_in_file
+      count = 0
+    end
+    store_links_in_file if @count >= 100
     nav_elements = get_nav_elements(append_url)
     nav_elements.each do |el|
       title = el["title"]
@@ -25,10 +29,10 @@ class Parser
       if link.include?("blob")
         if title[-3..-1] == ".md"
           links[link] = []
+          self.count += 1
         end
       elsif link.include?("tree")
         get_md_links(link)
-        @count += 1
       end
     end
   end
@@ -41,6 +45,7 @@ class Parser
     else
       File.write(name, yaml_links)
     end
+    self.links = {}
   end
 
   def find_anchors(node)
@@ -48,7 +53,7 @@ class Parser
     node.children.each do |child_node|
       anchors << child_node["href"] if child_node["href"] != nil
       child_anchors = find_anchors(child_node)
-      anchors << child_anchors if !child_anchors.length.zero?
+      anchors.concat(child_anchors)
     end
     anchors
   end
@@ -89,5 +94,6 @@ class Parser
   end
   private
 
-  attr_reader :agent, :append_url, :links, :filename
+  attr_reader :agent, :append_url, :filename
+  attr_accessor :links, :count
 end
