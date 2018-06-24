@@ -1,14 +1,16 @@
+require 'yaml'
+
 class Parser
 
   def initialize(agent)
     @agent = agent
+    @links = {}
   end
 
-  def get_links(append_url)
-    @links = [] #will store both
+  def store_links(append_url)
     get_md_links(append_url)
     add_links_from_md
-    links
+    store_links_in_file
   end
 
   def get_md_links(append_url)
@@ -17,31 +19,33 @@ class Parser
       title = el["title"]
       link = el["href"]
       if link.include?("blob")
-        links << [link] if title[-3..-1] == ".md"
+        if title[-3..-1] == ".md"
+          links[link] = []
+        end
       elsif link.include?("tree")
         dfs(link)
       end
     end
   end
 
-  def add_links_from_md
-    
+  def store_links_in_file
+    file_name = "links.yml"
+    yaml_links = links.to_yaml
+    if File.file?(filename)
+      File.prepend_write(file_name, yaml_links)
+    else
+      File.write(file_name, yaml_links)
+    end
   end
-  # def bfs(append_url)
-  #   queue = [append_url]
-  #   until queue.empty?
-  #     nav_elements = get_nav_elements(queue.shift)
-  #     nav_elements.each do |el|
-  #       title = el["title"]
-  #       link = el["href"]
-  #       if link.include?("blob")
-  #         store_links_from_md(link) if title[-3..-1] == ".md"
-  #       elsif link.include?("tree")
-  #         queue.push(link)
-  #       end
-  #     end
-  #   end
-  # end
+
+  def add_links_from_md
+    links.each_key do |md_append_url|
+      raw_url = create_raw_url(md_append_url)
+      #identify links in page
+      #shovel into array
+      #shovel links into array in hash at key
+    end
+  end
 
   def get_nav_elements(append_url)
     page = get_page(append_url)

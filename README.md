@@ -11,5 +11,7 @@ ruby interface.rb
 "Link:" REPO_LINK_HERE
 "Username:" GITHUB_USERNAME
 "Password:" GITHUB_PASSWORD
-#Program prints out links and .md files links are found in
+#Program stores links in links.yml (YAML) file of a hash where:
+  #key = URL of .md file with link
+  #value = all links in key file
 ```

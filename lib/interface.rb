@@ -1,6 +1,7 @@
 require 'io/console'
 require 'nokogiri'
 require 'mechanize'
+
 require_relative 'parse'
 require_relative 'mechanize'
 
@@ -29,18 +30,24 @@ class Interface
     pass
   end
 
-  def get_links(agent, append_url)
+  def store_links(agent, append_url)
     parser = Parser.new(agent)
     parser.get_links(append_url)
   end
 
+  def finish_message(append_url)
+    puts "All links from #{append_url} are now stored in links.yml!"
+  end
+
   def run
+    storage_file = get_storage_path
     append_url = get_url
-    p append_url
     username = get_username
     password = get_password
+
     agent = Mechanize.create_agent(username, password, LOGIN_URL)
-    links = get_links(agent, append_url)
+    store_links(agent, append_url)
+    finish_message
   end
 
 end
