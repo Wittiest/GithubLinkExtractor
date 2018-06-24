@@ -9,7 +9,7 @@ class Interface
   BASE_URL = "https://github.com"
 
   def get_url
-    puts "Enter a link in the following format #{BASE_URL}/user/repo_name):"
+    puts "Enter a link in the following format (#{BASE_URL}/user/repo_name):"
     print "Link:"
     link = gets.chomp
     raise ArgumentError.new("Link does not include github URL") unless link.include?(BASE_URL)
