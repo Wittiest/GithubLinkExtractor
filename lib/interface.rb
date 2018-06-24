@@ -1,9 +1,9 @@
 require 'io/console'
-require 'nokogiri'
 require 'mechanize'
 
 require_relative 'parse'
 require_relative 'mechanize'
+require_relative 'file'
 
 class Interface
   LOGIN_URL = "https://github.com/login"
@@ -32,7 +32,7 @@ class Interface
 
   def store_links(agent, append_url)
     parser = Parser.new(agent)
-    parser.get_links(append_url)
+    parser.store_links(append_url)
   end
 
   def finish_message(append_url)
@@ -40,14 +40,13 @@ class Interface
   end
 
   def run
-    storage_file = get_storage_path
     append_url = get_url
     username = get_username
     password = get_password
 
     agent = Mechanize.create_agent(username, password, LOGIN_URL)
     store_links(agent, append_url)
-    finish_message
+    finish_message(append_url)
   end
 
 end

@@ -1,6 +1,7 @@
 # Github Link Extractor
 ## Description
-This program allows you to extract all of the links from a Github repository. It requires login details for private repositories.
+This program allows you to extract all of the links from a Github repository. It requires login details for private repositories. It will write these links to a file named "links.yaml" and prepend to this file if it already exists.
+
 ## Usage
 
 ```shell

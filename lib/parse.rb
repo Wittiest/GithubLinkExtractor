@@ -1,10 +1,13 @@
 require 'yaml'
+require 'nokogiri'
 
 class Parser
 
-  def initialize(agent)
+  def initialize(agent, filename="links.yml")
     @agent = agent
     @links = {}
+    @filename = filename
+    @count = 0
   end
 
   def store_links(append_url)
@@ -14,6 +17,7 @@ class Parser
   end
 
   def get_md_links(append_url)
+    return if @count >= 20
     nav_elements = get_nav_elements(append_url)
     nav_elements.each do |el|
       title = el["title"]
@@ -23,27 +27,38 @@ class Parser
           links[link] = []
         end
       elsif link.include?("tree")
-        dfs(link)
+        get_md_links(link)
+        @count += 1
       end
     end
   end
 
   def store_links_in_file
-    file_name = "links.yml"
+    name = filename
     yaml_links = links.to_yaml
-    if File.file?(filename)
-      File.prepend_write(file_name, yaml_links)
+    if File.file?(name)
+      File.prepend_write(name, yaml_links)
     else
-      File.write(file_name, yaml_links)
+      File.write(name, yaml_links)
     end
+  end
+
+  def find_anchors(node)
+    anchors = []
+    node.children.each do |child_node|
+      anchors << child_node["href"] if child_node["href"] != nil
+      child_anchors = find_anchors(child_node)
+      anchors << child_anchors if !child_anchors.length.zero?
+    end
+    anchors
   end
 
   def add_links_from_md
     links.each_key do |md_append_url|
-      raw_url = create_raw_url(md_append_url)
-      #identify links in page
-      #shovel into array
-      #shovel links into array in hash at key
+      page = get_page(md_append_url)
+      sub_page = page.css("article").select {|link| link['class'] == "markdown-body entry-content"}.first
+      anchors = find_anchors(sub_page)
+      links[md_append_url] << anchors
     end
   end
 
@@ -74,5 +89,5 @@ class Parser
   end
   private
 
-  attr_reader :agent, :append_url, :links
+  attr_reader :agent, :append_url, :links, :filename
 end
