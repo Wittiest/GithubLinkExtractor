@@ -7,7 +7,7 @@ class Parser
     @agent = agent
     @links = {}
     @filename = filename
-    @count = 0
+    @md_count = 0
   end
 
   def store_links(append_url)
@@ -19,11 +19,11 @@ class Parser
   def incremental_storage
     puts "---Appending the links of 20 .md files to links.yml"
     store_links_in_file
-    count = 0
+    self.md_count = 0
   end
 
   def get_md_links(append_url)
-    incremental_storage if count >= 20
+    incremental_storage if md_count >= 20
 
     nav_elements = get_nav_elements(append_url)
     nav_elements.each do |el|
@@ -33,7 +33,7 @@ class Parser
         if title[-3..-1] == ".md"
           puts "Identified .md file at #{link}"
           links[link] = []
-          self.count += 1
+          self.md_count += 1
         end
       elsif link.include?("tree")
         get_md_links(link)
@@ -99,5 +99,5 @@ class Parser
   private
 
   attr_reader :agent, :append_url, :filename
-  attr_accessor :links, :count
+  attr_accessor :links, :md_count
 end
