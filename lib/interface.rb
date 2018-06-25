@@ -1,8 +1,10 @@
 require 'io/console'
 require 'mechanize'
+require 'open-uri'
 
 require_relative 'parse'
 require_relative 'mechanize'
+require_relative 'open_uri'
 require_relative 'file'
 
 class Interface
@@ -30,7 +32,7 @@ class Interface
     pass
   end
 
-  def store_links(agent, append_url)
+  def store_links(append_url, agent)
     parser = Parser.new(agent)
     parser.store_links(append_url)
   end
@@ -41,11 +43,14 @@ class Interface
 
   def run
     append_url = get_url
-    username = get_username
-    password = get_password
-
-    agent = Mechanize.create_agent(username, password, LOGIN_URL)
-    store_links(agent, append_url)
+    unless OpenURI.private_repo?(BASE_URL + append_url)
+      agent = Mechanize.new
+    else
+      username = get_username
+      password = get_password
+      agent = Mechanize.create_agent(username, password, LOGIN_URL)
+    end
+    store_links(append_url, agent)
     finish_message(append_url)
   end
 

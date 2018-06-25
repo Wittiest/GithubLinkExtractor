@@ -3,7 +3,7 @@ require 'nokogiri'
 
 class Parser
 
-  def initialize(agent, filename="links.yml")
+  def initialize(agent=nil, filename="links.yml")
     @agent = agent
     @links = {}
     @filename = filename
@@ -79,7 +79,13 @@ class Parser
   end
 
   def get_page(append_url)
-    agent.get(Interface::BASE_URL + append_url)
+      begin
+        page = agent.get(Interface::BASE_URL + append_url)
+      rescue Mechanize::ResponseCodeError => e
+        puts e.response_code
+        page = e.page
+      end
+      page
   end
 
   def extract_navigation_items(page)
@@ -99,6 +105,6 @@ class Parser
   end
   private
 
-  attr_reader :agent, :append_url, :filename
+  attr_reader :agent, :append_url, :filename, :private
   attr_accessor
 end
