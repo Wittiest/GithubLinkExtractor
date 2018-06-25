@@ -3,17 +3,19 @@ require 'nokogiri'
 
 class Parser
 
+  def store_links(append_url)
+    get_md_links(append_url)
+    add_links_from_md
+    store_links_in_file
+  end
+
+  private
+
   def initialize(agent=nil, filename="links.yml")
     @agent = agent
     @links = {}
     @filename = filename
     @md_count = 0
-  end
-
-  def store_links(append_url)
-    get_md_links(append_url)
-    add_links_from_md
-    store_links_in_file
   end
 
   def incremental_storage
@@ -103,7 +105,6 @@ class Parser
     end
     nav_elements
   end
-  private
 
   attr_reader :agent, :append_url, :filename, :private
   attr_accessor
