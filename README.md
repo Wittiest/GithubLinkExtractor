@@ -9,6 +9,7 @@ Github may send an error (HTTP 429 Too Many Request) if the repository is extrem
 ```shell
 git clone https://github.com/Wittiest/GithubLinkExtractor.git
 cd GithubLinkExtractor
+bundle install
 ruby interface.rb
 
 "Link:" https://github.com/USER/REPO_NAME
